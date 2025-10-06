@@ -2,10 +2,10 @@
 
 # supported compilers
 declare -Ar COMPILERS=(
-	['alpha']='gcc-alpha-linux-gnu'
 	['amd64']='gcc-x86-64-linux-gnu'
+	['alpha']='gcc-alpha-linux-gnu'
 	['arc']='gcc-arc-linux-gnu'
-	['arm64']='gcc-aarch64-linux-gnu aarch64-linux-gnu-gcc'
+	['arm64']='gcc-aarch64-linux-gnu'
 	['armel']='gcc-arm-linux-gnueabi'
 	['armhf']='gcc-arm-linux-gnueabihf'
 	['hppa64']='gcc-hppa64-linux-gnu'
@@ -31,8 +31,8 @@ declare -Ar COMPILERS=(
 	['x32']='gcc-x86-64-linux-gnux32'
 )
 declare -Ar COMMANDS=(
-	['alpha']='alpha-linux-gnu-gcc'
 	['amd64']='x86_64-linux-gnu-gcc'
+	['alpha']='alpha-linux-gnu-gcc'
 	['arc']='arc-linux-gnu-gcc'
 	['arm64']='aarch64-linux-gnu-gcc'
 	['armel']='arm-linux-gnueabi-gcc'
@@ -61,7 +61,7 @@ declare -Ar COMMANDS=(
 )
 
 # default compile options
-readonly GCC_OPTS='-g -O0 -c -fverbose-asm -fno-asynchronous-unwind-tables -fno-stack-protector -fno-stack-clash-protection -fcf-protection=none'
+readonly GCC_OPTS='-g -O0 -fno-asynchronous-unwind-tables -fno-stack-protector -fno-stack-clash-protection -fcf-protection=none'
 
 # default output directory
 readonly OUTPUT='output'
@@ -122,7 +122,7 @@ function dist {
 		fi
 
 		# build a temporary object file
-		$cmd $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $c!" 1>&2; rv=2; continue; }
+		$cmd -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $c!" 1>&2; rv=2; continue; }
 
 		# dump the assembly using the given syntax
 		objdump -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-$c" || { echo "dumping failed for architecture $c!" 1>&2; rv=3; continue; }
@@ -139,7 +139,7 @@ function self {
 
 	# build a temporary object file
 	local tmp=$(mktemp -u)
-	gcc $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo 'compilation failed!' 1>&2; return 2; }
+	gcc -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo 'compilation failed!' 1>&2; return 2; }
 
 	# dump the assembly using the given syntax
 	objdump -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-self" || { echo 'dumping failed!' 1>&2; return 3; }

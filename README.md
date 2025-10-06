@@ -52,35 +52,35 @@ You may find below a list of [currently supported architectures](##supported-arc
 ## Supported Architectures
 Here is the list of architectures supported by the setup script:
 
-| Name         | Package Needed                     |
-| ------------ | ---------------------------------- |
-| `alpha`      | `gcc-alpha-linux-gnu`              |
-| `amd64`      | `gcc-x86-64-linux-gnu`             |
-| `arc`        | `gcc-arc-linux-gnu`                |
-| `arm64`      | `gcc-aarch64-linux-gnu`            |
-| `armel`      | `gcc-arm-linux-gnueabi`            |
-| `armhf`      | `gcc-arm-linux-gnueabihf`          |
-| `hppa64`     | `gcc-hppa64-linux-gnu`             |
-| `hppa`       | `gcc-hppa-linux-gnu`               |
-| `i386`       | `gcc-i686-linux-gnu`               |
-| `loong64`    | `gcc-loongarch64-linux-gnu`        |
-| `m68k`       | `gcc-m68k-linux-gnu`               |
-| `mips64`     | `gcc-mips64-linux-gnuabi64`        |
-| `mips64el`   | `gcc-mips64el-linux-gnuabi64`      |
-| `mips64r6`   | `gcc-mipsisa64r6-linux-gnuabi64`   |
-| `mips64r6el` | `gcc-mipsisa64r6el-linux-gnuabi64` |
-| `mips`       | `gcc-mips-linux-gnu`               |
-| `mipsel`     | `gcc-mipsel-linux-gnu`             |
-| `mipsr6`     | `gcc-mipsisa32r6-linux-gnu`        |
-| `mipsr6el`   | `gcc-mipsisa32r6el-linux-gnu`      |
-| `powerpc`    | `gcc-powerpc-linux-gnu`            |
-| `ppc64`      | `gcc-powerpc64-linux-gnu`          |
-| `ppc64el`    | `gcc-powerpc64le-linux-gnu`        |
-| `riscv64`    | `gcc-riscv64-linux-gnu`            |
-| `s390x`      | `gcc-s390x-linux-gnu`              |
-| `sh4`        | `gcc-sh4-linux-gnu`                |
-| `sparc64`    | `gcc-sparc64-linux-gnu`            |
-| `x32`        | `gcc-x86-64-linux-gnux32`          |
+| Name         | Package Needed                     | Command                            |
+| ------------ | ---------------------------------- | ---------------------------------- |
+| `amd64`      | `gcc-x86-64-linux-gnu`             | `x86_64-linux-gnu-gcc`             |
+| `alpha`      | `gcc-alpha-linux-gnu`              | `alpha-linux-gnu-gcc`              |
+| `arc`        | `gcc-arc-linux-gnu`                | `arc-linux-gnu-gcc`                |
+| `arm64`      | `gcc-aarch64-linux-gnu`            | `aarch64-linux-gnu-gcc`            |
+| `armel`      | `gcc-arm-linux-gnueabi`            | `arm-linux-gnueabi-gcc`            |
+| `armhf`      | `gcc-arm-linux-gnueabihf`          | `arm-linux-gnueabihf-gcc`          |
+| `hppa64`     | `gcc-hppa64-linux-gnu`             | `hppa64-linux-gnu-gcc`             |
+| `hppa`       | `gcc-hppa-linux-gnu`               | `hppa-linux-gnu-gcc`               |
+| `i386`       | `gcc-i686-linux-gnu`               | `i686-linux-gnu-gcc`               |
+| `loong64`    | `gcc-loongarch64-linux-gnu`        | `loongarch64-linux-gnu-gcc`        |
+| `m68k`       | `gcc-m68k-linux-gnu`               | `m68k-linux-gnu-gcc`               |
+| `mips64`     | `gcc-mips64-linux-gnuabi64`        | `mips64-linux-gnuabi64-gcc`        |
+| `mips64el`   | `gcc-mips64el-linux-gnuabi64`      | `mips64el-linux-gnuabi64-gcc`      |
+| `mips64r6`   | `gcc-mipsisa64r6-linux-gnuabi64`   | `mipsisa64r6-linux-gnuabi64-gcc`   |
+| `mips64r6el` | `gcc-mipsisa64r6el-linux-gnuabi64` | `mipsisa64r6el-linux-gnuabi64-gcc` |
+| `mips`       | `gcc-mips-linux-gnu`               | `mips-linux-gnu-gcc`               |
+| `mipsel`     | `gcc-mipsel-linux-gnu`             | `mipsel-linux-gnu-gcc`             |
+| `mipsr6`     | `gcc-mipsisa32r6-linux-gnu`        | `mipsisa32r6-linux-gnu-gcc`        |
+| `mipsr6el`   | `gcc-mipsisa32r6el-linux-gnu`      | `mipsisa32r6el-linux-gnu-gcc`      |
+| `powerpc`    | `gcc-powerpc-linux-gnu`            | `powerpc-linux-gnu-gcc`            |
+| `ppc64`      | `gcc-powerpc64-linux-gnu`          | `powerpc64-linux-gnu-gcc`          |
+| `ppc64el`    | `gcc-powerpc64le-linux-gnu`        | `powerpc64le-linux-gnu-gcc`        |
+| `riscv64`    | `gcc-riscv64-linux-gnu`            | `riscv64-linux-gnu-gcc`            |
+| `s390x`      | `gcc-s390x-linux-gnu`              | `s390x-linux-gnu-gcc`              |
+| `sh4`        | `gcc-sh4-linux-gnu`                | `sh4-linux-gnu-gcc`                |
+| `sparc64`    | `gcc-sparc64-linux-gnu`            | `sparc64-linux-gnu-gcc`            |
+| `x32`        | `gcc-x86-64-linux-gnux32`          | `x86_64-linux-gnux32-gcc`          |
 
 ## Checklist
 - **Registers**
