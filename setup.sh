@@ -31,40 +31,40 @@ declare -Ar COMPILERS=(
 	['x32']='gcc-x86-64-linux-gnux32'
 )
 declare -Ar COMMANDS=(
-	['amd64']='x86_64-linux-gnu-gcc'
-	['alpha']='alpha-linux-gnu-gcc'
-	['arc']='arc-linux-gnu-gcc'
-	['arm64']='aarch64-linux-gnu-gcc'
-	['armel']='arm-linux-gnueabi-gcc'
-	['armhf']='arm-linux-gnueabihf-gcc'
-	['hppa64']='hppa64-linux-gnu-gcc'
-	['hppa']='hppa-linux-gnu-gcc'
-	['i386']='i686-linux-gnu-gcc'
-	['loong64']='loongarch64-linux-gnu-gcc'
-	['m68k']='m68k-linux-gnu-gcc'
-	['mips64']='mips64-linux-gnuabi64-gcc'
-	['mips64el']='mips64el-linux-gnuabi64-gcc'
-	['mips64r6']='mipsisa64r6-linux-gnuabi64-gcc'
-	['mips64r6el']='mipsisa64r6el-linux-gnuabi64-gcc'
-	['mips']='mips-linux-gnu-gcc'
-	['mipsel']='mipsel-linux-gnu-gcc'
-	['mipsr6']='mipsisa32r6-linux-gnu-gcc'
-	['mipsr6el']='mipsisa32r6el-linux-gnu-gcc'
-	['powerpc']='powerpc-linux-gnu-gcc'
-	['ppc64']='powerpc64-linux-gnu-gcc'
-	['ppc64el']='powerpc64le-linux-gnu-gcc'
-	['riscv64']='riscv64-linux-gnu-gcc'
-	['s390x']='s390x-linux-gnu-gcc'
-	['sh4']='sh4-linux-gnu-gcc'
-	['sparc64']='sparc64-linux-gnu-gcc'
-	['x32']='x86_64-linux-gnux32-gcc'
+	['amd64']='x86_64-linux-gnu'
+	['alpha']='alpha-linux-gnu'
+	['arc']='arc-linux-gnu'
+	['arm64']='aarch64-linux-gnu'
+	['armel']='arm-linux-gnueabi'
+	['armhf']='arm-linux-gnueabihf'
+	['hppa64']='hppa64-linux-gnu'
+	['hppa']='hppa-linux-gnu'
+	['i386']='i686-linux-gnu'
+	['loong64']='loongarch64-linux-gnu'
+	['m68k']='m68k-linux-gnu'
+	['mips64']='mips64-linux-gnuabi64'
+	['mips64el']='mips64el-linux-gnuabi64'
+	['mips64r6']='mipsisa64r6-linux-gnuabi64'
+	['mips64r6el']='mipsisa64r6el-linux-gnuabi64'
+	['mips']='mips-linux-gnu'
+	['mipsel']='mipsel-linux-gnu'
+	['mipsr6']='mipsisa32r6-linux-gnu'
+	['mipsr6el']='mipsisa32r6el-linux-gnu'
+	['powerpc']='powerpc-linux-gnu'
+	['ppc64']='powerpc64-linux-gnu'
+	['ppc64el']='powerpc64le-linux-gnu'
+	['riscv64']='riscv64-linux-gnu'
+	['s390x']='s390x-linux-gnu'
+	['sh4']='sh4-linux-gnu'
+	['sparc64']='sparc64-linux-gnu'
+	['x32']='x86_64-linux-gnux32'
 )
 
 # default compile options
 readonly GCC_OPTS='-g -O0 -fno-asynchronous-unwind-tables -fno-stack-protector -fno-stack-clash-protection -fcf-protection=none'
 
 # default output directory
-readonly OUTPUT='output'
+readonly OUTPUT='asm-rosetta'
 
 # default assembly syntax
 syntax='-Mintel'
@@ -99,7 +99,8 @@ function list {
 # make the stone for a list of architectures
 function dist {
 	local c
-	local cmd
+	local cmdg
+	local cmdo
 	local tmp
 	local rv=0
 
@@ -112,20 +113,25 @@ function dist {
 			echo "unsupported architecture $c!" 1>&2; continue
 		fi
 
-		cmd="${COMMANDS[$c]}"
+		cmdg="${COMMANDS[$c]}-gcc"
+		cmdo="${COMMANDS[$c]}-objdump"
 		tmp=$(mktemp -u)
 
-		# check if the package is installed
-		if ! command -v $cmd &> /dev/null; then
-			echo "command not found $cmd, install ${COMPILERS[$c]}!" 1>&2
+		# check if the packages are installed
+		if ! command -v $cmdg &> /dev/null; then
+			echo "command not found $cmdg, install ${COMPILERS[$c]}!" 1>&2
+			rv=2; continue
+		fi
+		if ! command -v $cmdo &> /dev/null; then
+			echo "command not found $cmdo, install ${COMPILERS[$c]}!" 1>&2
 			rv=2; continue
 		fi
 
 		# build a temporary object file
-		$cmd -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $c!" 1>&2; rv=2; continue; }
+		$cmdg -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $c!" 1>&2; rv=2; continue; }
 
 		# dump the assembly using the given syntax
-		objdump -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-$c" || { echo "dumping failed for architecture $c!" 1>&2; rv=3; continue; }
+		$cmdo -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-$c" || { echo "dumping failed for architecture $c!" 1>&2; rv=3; continue; }
 
 		echo "successful build for architecture $c!"
 	done
@@ -149,7 +155,7 @@ function self {
 
 # create a distribution archive of all the artifacts
 function pack {
-	tar -H gnu --gzip -cf "asm-rosetta-$(date '+%d-%m-%Y-%H-%M-%S').tar.gz" "$OUTPUT/asm-rosetta-*"
+	tar -H gnu --gzip -cf "asm-rosetta-$(date '+%d-%m-%Y-%H-%M-%S').tar.gz" $OUTPUT/asm-rosetta-*
 	return $?
 }
 
