@@ -99,44 +99,51 @@ function list {
 
 # make the stone for a list of architectures
 function dist {
+	readonly threads=$(nproc)
 	local c
-	local cmdg
-	local cmdo
-	local tmp
-	local rv=0
 
 	# create the destination directory
 	mkdir $OUTPUT &> /dev/null
 
+	# run the buildings in parallel
 	for c in "$@"; do
-		# check if the architecture is supported
-		if [ -z "${COMMANDS[$c]+a}" ]; then
-			echo "unsupported architecture $c!" 1>&2; continue
-		fi
-
-		cmdg="${COMMANDS[$c]}-gcc"
-		cmdo="${COMMANDS[$c]}-objdump"
-		tmp=$(mktemp -u)
-
-		# check if the packages are installed
-		if ! command -v $cmdg &> /dev/null; then
-			echo "command not found $cmdg, install ${COMPILERS[$c]}!" 1>&2
-			rv=2; continue
-		fi
-		if ! command -v $cmdo &> /dev/null; then
-			echo "command not found $cmdo, install ${COMPILERS[$c]}!" 1>&2
-			rv=2; continue
-		fi
-
-		# build a temporary object file
-		$cmdg -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $c!" 1>&2; rv=2; continue; }
-
-		# dump the assembly using the given syntax
-		$cmdo -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-$c" || { echo "dumping failed for architecture $c!" 1>&2; rv=3; continue; }
-
-		echo "successful build for architecture $c!"
+		while [ $(jobs -p | wc -l) -gt $threads ]; do wait -n; done
+		build "$c" &
 	done
-	return $rv
+
+	# wait for all background tasks to finish
+	wait
+}
+
+# make the stone for a single architecture
+function build {
+	# check if the architecture is supported
+	if [ -z "${COMMANDS[$1]+a}" ]; then
+		echo "unsupported architecture $1!" 1>&2; return 0
+	fi
+
+	local cmdg="${COMMANDS[$1]}-gcc"
+	local cmdo="${COMMANDS[$1]}-objdump"
+	local tmp=$(mktemp -u)
+
+	# check if the packages are installed
+	if ! command -v $cmdg &> /dev/null; then
+		echo "command not found $cmdg, install ${COMPILERS[$1]}!" 1>&2
+		return 2
+	fi
+	if ! command -v $cmdo &> /dev/null; then
+		echo "command not found $cmdo, install ${COMPILERS[$1]}!" 1>&2
+		return 2
+	fi
+
+	# build a temporary object file
+	$cmdg -c -pipe -fverbose-asm $GCC_OPTS -o "$tmp" rosetta.c > /dev/null || { echo "compilation failed for architecture $1!" 1>&2; return 2; }
+
+	# dump the assembly using the given syntax
+	$cmdo -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-$1" || { echo "dumping failed for architecture $1!" 1>&2; return 3; }
+
+	rm "$tmp" &> /dev/null
+	echo "successful build for architecture $1!"
 }
 
 # make the stone for host architecture
@@ -151,6 +158,7 @@ function self {
 	# dump the assembly using the given syntax
 	objdump -drwC $syntax -S "$tmp" > "$OUTPUT/asm-rosetta-self" || { echo 'dumping failed!' 1>&2; return 3; }
 
+	rm "$tmp" &> /dev/null
 	echo 'successful build for host architecture!'
 }
 
