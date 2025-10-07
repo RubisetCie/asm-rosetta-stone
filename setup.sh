@@ -67,7 +67,7 @@ readonly GCC_OPTS='-g -O0 -fno-asynchronous-unwind-tables -fno-stack-protector -
 readonly OUTPUT='asm-rosetta'
 
 # default assembly syntax
-syntax='-Mintel'
+syntax=''
 all=0
 
 # list of architectures to build for
@@ -77,11 +77,12 @@ declare -a archs=()
 function usage {
 	echo "Usage: $0 [<opts>] [<arch1> [<arch2> [<...]]]
 Options:
-    -f,--full: build for all architectures (default is host or specified).
-    -l,--list: print the list of cross-compilers to install (all).
-    -a,--atnt: dump the assembly using AT&T syntax (default is Intel).
-    -p,--pack: pack the built rosetta stone.
-    -h,--help: display the help."
+    -f,--full : build for all architectures (default is host or specified).
+    -l,--list : print the list of cross-compilers to install (all).
+    -i,--intel: force dumping assembly using Intel syntax (unsupported for some archs).
+    -a,--atnt : force dumping assembly using AT&T syntax (unsupported for some archs).
+    -p,--pack : pack the built rosetta stone.
+    -h,--help : display the help."
 }
 
 # display the list of packages to install
@@ -170,11 +171,15 @@ while [ $# -gt 0 ]; do
 			syntax='-Matt'
 			shift
 			;;
+		-i|--int*)
+			syntax='-Mintel'
+			shift
+			;;
 		-f|--f*)
 			all=1
 			shift
 			;;
-		-l|--l*|--i*)
+		-l|--l*|--ins*)
 			list
 			exit 0
 			;;
